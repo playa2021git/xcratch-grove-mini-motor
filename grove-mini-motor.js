@@ -1,6 +1,6 @@
 /*
  * Grove Mini I2C Motor Driver 専用 Xcratch 拡張
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * 対応機器:
  * - TFW-TR1（タコラッチ）
@@ -16,10 +16,15 @@
 (function (Scratch) {
     'use strict';
 
-    const VERSION = '1.1.0';
+    const VERSION = '1.1.1';
     const CONTROL_REGISTER = 0x00;
     const FAULT_REGISTER = 0x01;
     const CLEAR_FAULT = 0x80;
+
+    const CHANNEL_ADDRESS = Object.freeze({
+        ch1: 0x65,
+        ch2: 0x60
+    });
 
     const MODE = Object.freeze({
         COAST: 0b00,
@@ -31,7 +36,8 @@
     class GroveMiniMotor {
         getInfo() {
             return {
-                id: 'groveminimotor',
+                // 旧版が読み込まれたXcratchでも新定義として扱わせるためIDを更新する。
+                id: 'groveminimotor111',
                 name: `Groveミニモーター v${VERSION}`,
                 color1: '#00A67E',
                 color2: '#008F6C',
@@ -45,7 +51,7 @@
                             CHANNEL: {
                                 type: Scratch.ArgumentType.STRING,
                                 menu: 'channelMenu',
-                                defaultValue: '0x60'
+                                defaultValue: 'ch2'
                             },
                             DIRECTION: {
                                 type: Scratch.ArgumentType.STRING,
@@ -66,7 +72,7 @@
                             CHANNEL: {
                                 type: Scratch.ArgumentType.STRING,
                                 menu: 'channelMenu',
-                                defaultValue: '0x60'
+                                defaultValue: 'ch2'
                             }
                         }
                     },
@@ -78,7 +84,7 @@
                             CHANNEL: {
                                 type: Scratch.ArgumentType.STRING,
                                 menu: 'channelMenu',
-                                defaultValue: '0x60'
+                                defaultValue: 'ch2'
                             }
                         }
                     },
@@ -90,7 +96,7 @@
                             CHANNEL: {
                                 type: Scratch.ArgumentType.STRING,
                                 menu: 'channelMenu',
-                                defaultValue: '0x60'
+                                defaultValue: 'ch2'
                             }
                         }
                     },
@@ -116,8 +122,8 @@
                     channelMenu: {
                         acceptReporters: false,
                         items: [
-                            {text: 'Ch1', value: '0x65'},
-                            {text: 'Ch2', value: '0x60'}
+                            {text: 'Ch1', value: 'ch1'},
+                            {text: 'Ch2', value: 'ch2'}
                         ]
                     },
                     directionMenu: {
@@ -152,11 +158,11 @@
             return writer;
         }
 
-        parseAddress(value) {
-            const text = String(value).trim();
-            const address = Number(text);
-            if (!Number.isInteger(address) || address < 0 || address > 0x7F) {
-                throw new Error(`I2Cアドレスが不正です: ${text}`);
+        getAddress(channel) {
+            const key = String(channel).trim().toLowerCase();
+            const address = CHANNEL_ADDRESS[key];
+            if (typeof address !== 'number') {
+                throw new Error(`チャンネルが不正です: ${channel}`);
             }
             return address;
         }
@@ -177,7 +183,7 @@
         }
 
         async drive(args) {
-            const address = this.parseAddress(args.CHANNEL);
+            const address = this.getAddress(args.CHANNEL);
             const speed = this.clampSpeed(args.SPEED);
 
             if (speed === 0) {
@@ -193,17 +199,17 @@
         }
 
         async stop(args) {
-            const address = this.parseAddress(args.CHANNEL);
+            const address = this.getAddress(args.CHANNEL);
             await this.write(address, CONTROL_REGISTER, MODE.COAST);
         }
 
         async brake(args) {
-            const address = this.parseAddress(args.CHANNEL);
+            const address = this.getAddress(args.CHANNEL);
             await this.write(address, CONTROL_REGISTER, MODE.BRAKE);
         }
 
         async clearFault(args) {
-            const address = this.parseAddress(args.CHANNEL);
+            const address = this.getAddress(args.CHANNEL);
             await this.write(address, FAULT_REGISTER, CLEAR_FAULT);
         }
 
