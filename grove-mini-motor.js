@@ -1,9 +1,14 @@
 /*
  * Grove Mini I2C Motor Driver 専用 Xcratch 拡張
+ * Version: 1.1.0
  *
  * 対応機器:
  * - TFW-TR1（タコラッチ）
  * - Grove Mini I2C Motor Driver（DRV8830）
+ *
+ * チャンネルとI2Cアドレス:
+ * - Ch1: 0x65
+ * - Ch2: 0x60
  *
  * この拡張はAkaDako拡張のI2C書き込み機能を利用します。
  */
@@ -11,6 +16,7 @@
 (function (Scratch) {
     'use strict';
 
+    const VERSION = '1.1.0';
     const CONTROL_REGISTER = 0x00;
     const FAULT_REGISTER = 0x01;
     const CLEAR_FAULT = 0x80;
@@ -26,7 +32,7 @@
         getInfo() {
             return {
                 id: 'groveminimotor',
-                name: 'Groveミニモーター',
+                name: `Groveミニモーター v${VERSION}`,
                 color1: '#00A67E',
                 color2: '#008F6C',
                 color3: '#00785B',
@@ -34,11 +40,11 @@
                     {
                         opcode: 'drive',
                         blockType: Scratch.BlockType.COMMAND,
-                        text: 'モーター [ADDRESS] を [DIRECTION] に 速度 [SPEED] で回す',
+                        text: 'モーター [CHANNEL] を [DIRECTION] に 速度 [SPEED] で回す',
                         arguments: {
-                            ADDRESS: {
+                            CHANNEL: {
                                 type: Scratch.ArgumentType.STRING,
-                                menu: 'addressMenu',
+                                menu: 'channelMenu',
                                 defaultValue: '0x60'
                             },
                             DIRECTION: {
@@ -55,11 +61,11 @@
                     {
                         opcode: 'stop',
                         blockType: Scratch.BlockType.COMMAND,
-                        text: 'モーター [ADDRESS] を惰性で止める',
+                        text: 'モーター [CHANNEL] を惰性で止める',
                         arguments: {
-                            ADDRESS: {
+                            CHANNEL: {
                                 type: Scratch.ArgumentType.STRING,
-                                menu: 'addressMenu',
+                                menu: 'channelMenu',
                                 defaultValue: '0x60'
                             }
                         }
@@ -67,11 +73,11 @@
                     {
                         opcode: 'brake',
                         blockType: Scratch.BlockType.COMMAND,
-                        text: 'モーター [ADDRESS] をブレーキで止める',
+                        text: 'モーター [CHANNEL] をブレーキで止める',
                         arguments: {
-                            ADDRESS: {
+                            CHANNEL: {
                                 type: Scratch.ArgumentType.STRING,
-                                menu: 'addressMenu',
+                                menu: 'channelMenu',
                                 defaultValue: '0x60'
                             }
                         }
@@ -79,11 +85,11 @@
                     {
                         opcode: 'clearFault',
                         blockType: Scratch.BlockType.COMMAND,
-                        text: 'モーター [ADDRESS] のfaultを解除する',
+                        text: 'モーター [CHANNEL] のfaultを解除する',
                         arguments: {
-                            ADDRESS: {
+                            CHANNEL: {
                                 type: Scratch.ArgumentType.STRING,
-                                menu: 'addressMenu',
+                                menu: 'channelMenu',
                                 defaultValue: '0x60'
                             }
                         }
@@ -107,11 +113,11 @@
                     }
                 ],
                 menus: {
-                    addressMenu: {
-                        acceptReporters: true,
+                    channelMenu: {
+                        acceptReporters: false,
                         items: [
-                            {text: '0x60', value: '0x60'},
-                            {text: '0x62', value: '0x62'}
+                            {text: 'Ch1', value: '0x65'},
+                            {text: 'Ch2', value: '0x60'}
                         ]
                     },
                     directionMenu: {
@@ -171,7 +177,7 @@
         }
 
         async drive(args) {
-            const address = this.parseAddress(args.ADDRESS);
+            const address = this.parseAddress(args.CHANNEL);
             const speed = this.clampSpeed(args.SPEED);
 
             if (speed === 0) {
@@ -187,17 +193,17 @@
         }
 
         async stop(args) {
-            const address = this.parseAddress(args.ADDRESS);
+            const address = this.parseAddress(args.CHANNEL);
             await this.write(address, CONTROL_REGISTER, MODE.COAST);
         }
 
         async brake(args) {
-            const address = this.parseAddress(args.ADDRESS);
+            const address = this.parseAddress(args.CHANNEL);
             await this.write(address, CONTROL_REGISTER, MODE.BRAKE);
         }
 
         async clearFault(args) {
-            const address = this.parseAddress(args.ADDRESS);
+            const address = this.parseAddress(args.CHANNEL);
             await this.write(address, FAULT_REGISTER, CLEAR_FAULT);
         }
 
