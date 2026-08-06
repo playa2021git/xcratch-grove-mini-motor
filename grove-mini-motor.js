@@ -11,12 +11,6 @@
 (function (Scratch) {
     'use strict';
 
-    if (!Scratch.extensions.unsandboxed) {
-        throw new Error('Grove Mini Motor拡張はサンドボックス外で実行してください。');
-    }
-
-    const runtime = Scratch.vm.runtime;
-
     const CONTROL_REGISTER = 0x00;
     const FAULT_REGISTER = 0x01;
     const CLEAR_FAULT = 0x80;
@@ -131,10 +125,23 @@
             };
         }
 
+        getRuntime() {
+            const runtime = Scratch.vm && Scratch.vm.runtime;
+            if (!runtime) {
+                throw new Error(
+                    'XcratchのVMへアクセスできません。拡張機能をサンドボックス外で読み込んでください。'
+                );
+            }
+            return runtime;
+        }
+
         getI2CWriter() {
+            const runtime = this.getRuntime();
             const writer = runtime._primitives && runtime._primitives.g2s_i2cWrite;
             if (typeof writer !== 'function') {
-                throw new Error('AkaDako拡張が見つかりません。先にAkaDako拡張を追加し、TFW-TR1を接続してください。');
+                throw new Error(
+                    'AkaDako拡張が見つかりません。先にAkaDako拡張を追加し、TFW-TR1を接続してください。'
+                );
             }
             return writer;
         }
