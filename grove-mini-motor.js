@@ -1,6 +1,6 @@
 /*
  * Grove Mini I2C Motor Driver 専用 Xcratch 拡張
- * Version: 1.1.1
+ * Version: 1.1.2
  *
  * 対応機器:
  * - TFW-TR1（タコラッチ）
@@ -16,7 +16,7 @@
 (function (Scratch) {
     'use strict';
 
-    const VERSION = '1.1.1';
+    const VERSION = '1.1.2';
     const CONTROL_REGISTER = 0x00;
     const FAULT_REGISTER = 0x01;
     const CLEAR_FAULT = 0x80;
@@ -36,8 +36,7 @@
     class GroveMiniMotor {
         getInfo() {
             return {
-                // 旧版が読み込まれたXcratchでも新定義として扱わせるためIDを更新する。
-                id: 'groveminimotor111',
+                id: 'groveminimotor',
                 name: `Groveミニモーター v${VERSION}`,
                 color1: '#00A67E',
                 color2: '#008F6C',
@@ -120,7 +119,7 @@
                 ],
                 menus: {
                     channelMenu: {
-                        acceptReporters: false,
+                        acceptReporters: true,
                         items: [
                             {text: 'Ch1', value: 'ch1'},
                             {text: 'Ch2', value: 'ch2'}
