@@ -6,7 +6,7 @@ TFW-TR1（タコラッチ）に接続した **Grove - I2C ミニモータード�
 
 ## バージョン
 
-**v1.1.0**
+**v1.1.1**
 
 ## 特長
 
@@ -25,7 +25,7 @@ TFW-TR1（タコラッチ）に接続した **Grove - I2C ミニモータード�
 | Ch1 | `0x65` |
 | Ch2 | `0x60` |
 
-通常はブロック上で `Ch1` または `Ch2` を選ぶだけで、I2Cアドレスを直接入力する必要はありません。
+ブロック上では `Ch1` または `Ch2` を選びます。内部I2Cアドレスは拡張内で変換するため、利用者が直接入力する必要はありません。
 
 ## 追加されるブロック
 
@@ -52,16 +52,12 @@ TFW-TR1（タコラッチ）に接続した **Grove - I2C ミニモータード�
 4. 拡張機能ローダーで、次のURLを読み込みます。
 
 ```text
-https://playa2021git.github.io/xcratch-grove-mini-motor/grove-mini-motor.js
+https://playa2021git.github.io/xcratch-grove-mini-motor/grove-mini-motor.js?v=1.1.1
 ```
 
-5. 「Groveミニモーター v1.1.0」カテゴリーのブロックを使用します。
+5. 「Groveミニモーター v1.1.1」カテゴリーのブロックを使用します。
 
-キャッシュが残る場合は、次のようにバージョン番号を付けて読み込んでください。
-
-```text
-https://playa2021git.github.io/xcratch-grove-mini-motor/grove-mini-motor.js?v=1.1.0
-```
+v1.1.1では、旧版のブロック定義がXcratch内に残る問題を避けるため、拡張IDを更新しています。旧カテゴリーが残っている場合は、新しいプロジェクトまたはページ再読み込み後にv1.1.1を追加してください。
 
 ## 基本例
 
