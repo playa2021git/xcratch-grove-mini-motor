@@ -1,0 +1,5 @@
+GitHub Pages rebuild marker
+Version: 2026-08-06-v1
+Expected files:
+- load-test-v1.js
+- grove-mini-motor-v1.1.3.js
